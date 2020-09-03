@@ -11,7 +11,6 @@
 package com.nhancv.webrtcpeer.rtc_comm.tcp;
 
 import android.os.Handler;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +22,7 @@ import java.util.LinkedList;
 import de.tavendo.autobahn.WebSocket.WebSocketConnectionObserver;
 import de.tavendo.autobahn.WebSocketConnection;
 import de.tavendo.autobahn.WebSocketException;
+import timber.log.Timber;
 
 /**
  * WebSocket client implementation.
@@ -66,14 +66,14 @@ public class WebSocketChannelClient {
     public void connect(final String wsUrl, final String postUrl) {
         checkIfCalledOnValidThread();
         if (state != WebSocketConnectionState.NEW) {
-            Log.e(TAG, "WebSocket is already connected.");
+            Timber.tag(TAG).e("WebSocket is already connected.");
             return;
         }
         wsServerUrl = wsUrl;
         postServerUrl = postUrl;
         closeEvent = false;
 
-        Log.d(TAG, "Connecting WebSocket to: " + wsUrl + ". Post URL: " + postUrl);
+        Timber.tag(TAG).d("Connecting WebSocket to: " + wsUrl + ". Post URL: " + postUrl);
         ws = new WebSocketConnection();
         wsObserver = new WebSocketObserver();
         try {
@@ -85,21 +85,21 @@ public class WebSocketChannelClient {
         }
     }
 
-    public void register(final String roomID, final String clientID) {
+    public void register(final String roomId, final String clientId) {
         checkIfCalledOnValidThread();
-        this.roomID = roomID;
-        this.clientID = clientID;
+        this.roomID = roomId;
+        this.clientID = clientId;
         if (state != WebSocketConnectionState.CONNECTED) {
-            Log.w(TAG, "WebSocket register() in state " + state);
+            Timber.w("WebSocket register() in state %s", state);
             return;
         }
-        Log.d(TAG, "Registering WebSocket for room " + roomID + ". ClientID: " + clientID);
+        Timber.tag(TAG).d("Registering WebSocket for room " + roomId + ". ClientID: " + clientId);
         JSONObject json = new JSONObject();
         try {
             json.put("cmd", "register");
-            json.put("roomid", roomID);
-            json.put("clientid", clientID);
-            Log.d(TAG, "C->WSS: " + json.toString());
+            json.put("roomid", roomId);
+            json.put("clientid", clientId);
+            Timber.tag(TAG).d("C->WSS: %s", json.toString());
             ws.sendTextMessage(json.toString());
             state = WebSocketConnectionState.REGISTERED;
             // Send any previously accumulated messages.
@@ -119,12 +119,12 @@ public class WebSocketChannelClient {
             case CONNECTED:
                 // Store outgoing messages and send them after websocket client
                 // is registered.
-                Log.d(TAG, "WS ACC: " + message);
+                Timber.tag(TAG).d("WS ACC: %s", message);
                 wsSendQueue.add(message);
                 return;
             case ERROR:
             case CLOSED:
-                Log.e(TAG, "WebSocket send() in error or closed state : " + message);
+                Timber.tag(TAG).e("WebSocket send() in error or closed state : %s", message);
                 return;
             case REGISTERED:
                 JSONObject json = new JSONObject();
@@ -132,11 +132,13 @@ public class WebSocketChannelClient {
                     json.put("cmd", "send");
                     json.put("msg", message);
                     message = json.toString();
-                    Log.d(TAG, "C->WSS: " + message);
+                    Timber.tag(TAG).d("C->WSS: %s", message);
                     ws.sendTextMessage(message);
                 } catch (JSONException e) {
                     reportError("WebSocket send JSON error: " + e.getMessage());
                 }
+                break;
+            default:
                 break;
         }
     }
@@ -145,18 +147,18 @@ public class WebSocketChannelClient {
     // connection is opened.
     public void post(String message) {
         checkIfCalledOnValidThread();
-        sendWSSMessage("POST", message);
+        sendWssMessage("POST", message);
     }
 
     public void disconnect(boolean waitForComplete) {
         checkIfCalledOnValidThread();
-        Log.d(TAG, "Disconnect WebSocket. State: " + state);
+        Timber.tag(TAG).d("Disconnect WebSocket. State: %s", state);
         if (state == WebSocketConnectionState.REGISTERED) {
             // Send "bye" to WebSocket server.
             send("{\"type\": \"bye\"}");
             state = WebSocketConnectionState.CONNECTED;
             // Send http DELETE to http WebSocket server.
-            sendWSSMessage("DELETE", "");
+            sendWssMessage("DELETE", "");
         }
         // Close WebSocket in CONNECTED or ERROR states only.
         if (state == WebSocketConnectionState.CONNECTED || state == WebSocketConnectionState.ERROR) {
@@ -172,17 +174,17 @@ public class WebSocketChannelClient {
                             closeEventLock.wait(CLOSE_TIMEOUT);
                             break;
                         } catch (InterruptedException e) {
-                            Log.e(TAG, "Wait error: " + e.toString());
+                            Timber.tag(TAG).e("Wait error: %s", e.toString());
                         }
                     }
                 }
             }
         }
-        Log.d(TAG, "Disconnecting WebSocket done.");
+        Timber.tag(TAG).d("Disconnecting WebSocket done.");
     }
 
     private void reportError(final String errorMessage) {
-        Log.e(TAG, errorMessage);
+        Timber.tag(TAG).e(errorMessage);
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -195,9 +197,9 @@ public class WebSocketChannelClient {
     }
 
     // Asynchronously send POST/DELETE to WebSocket server.
-    private void sendWSSMessage(final String method, final String message) {
+    private void sendWssMessage(final String method, final String message) {
         String postUrl = postServerUrl + "/" + roomID + "/" + clientID;
-        Log.d(TAG, "WS " + method + " : " + postUrl + " : " + message);
+        Timber.tag(TAG).d("WS " + method + " : " + postUrl + " : " + message);
         AsyncHttpURLConnection httpConnection =
                 new AsyncHttpURLConnection(method, postUrl, message, new AsyncHttpURLConnection.AsyncHttpEvents() {
                     @Override
@@ -206,7 +208,8 @@ public class WebSocketChannelClient {
                     }
 
                     @Override
-                    public void onHttpComplete(String response) {}
+                    public void onHttpComplete(String response) {
+                    }
                 });
         httpConnection.send();
     }
@@ -223,10 +226,25 @@ public class WebSocketChannelClient {
      * Possible WebSocket connection states.
      */
     public enum WebSocketConnectionState {
+        /**
+         * New
+         */
         NEW,
+        /**
+         * Connected
+         */
         CONNECTED,
+        /**
+         * Registered
+         */
         REGISTERED,
+        /**
+         * Closed
+         */
         CLOSED,
+        /**
+         * Error
+         */
         ERROR
     }
 
@@ -245,7 +263,7 @@ public class WebSocketChannelClient {
     private class WebSocketObserver implements WebSocketConnectionObserver {
         @Override
         public void onOpen() {
-            Log.d(TAG, "WebSocket connection opened to: " + wsServerUrl);
+            Timber.tag(TAG).d("WebSocket connection opened to: %s", wsServerUrl);
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -260,8 +278,7 @@ public class WebSocketChannelClient {
 
         @Override
         public void onClose(WebSocketCloseNotification code, String reason) {
-            Log.d(TAG, "WebSocket connection closed. Code: " + code + ". Reason: " + reason + ". State: "
-                       + state);
+            Timber.tag(TAG).d("WebSocket connection closed. Code: " + code + ". Reason: " + reason + ". State: " + state);
             synchronized (closeEventLock) {
                 closeEvent = true;
                 closeEventLock.notify();
@@ -279,13 +296,13 @@ public class WebSocketChannelClient {
 
         @Override
         public void onTextMessage(String payload) {
-            Log.d(TAG, "WSS->C: " + payload);
+            Timber.tag(TAG).d("WSS->C: %s", payload);
             final String message = payload;
             handler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (state == WebSocketConnectionState.CONNECTED
-                        || state == WebSocketConnectionState.REGISTERED) {
+                            || state == WebSocketConnectionState.REGISTERED) {
                         events.onWebSocketMessage(message);
                     }
                 }
@@ -293,9 +310,11 @@ public class WebSocketChannelClient {
         }
 
         @Override
-        public void onRawTextMessage(byte[] payload) {}
+        public void onRawTextMessage(byte[] payload) {
+        }
 
         @Override
-        public void onBinaryMessage(byte[] payload) {}
+        public void onBinaryMessage(byte[] payload) {
+        }
     }
 }

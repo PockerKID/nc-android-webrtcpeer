@@ -13,40 +13,48 @@ package com.nhancv.webrtcpeer.rtc_plugins;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.nhancv.webrtcpeer.rtc_util.OnCallEvents;
 
-import org.webrtc.CameraEnumerationAndroid.CaptureFormat;
+import com.nhancv.webrtcpeer.R;
+import com.nhancv.webrtcpeer.rtc_util.OnCallEvents;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
+
+import org.webrtc.CameraEnumerationAndroid.CaptureFormat;
 
 /**
  * Control capture format based on a seekbar listener.
  */
 public class CaptureQualityController implements SeekBar.OnSeekBarChangeListener {
-    // Prioritize framerate below this threshold and resolution above the threshold.
-    private static final int FRAMERATE_THRESHOLD = 15;
     private final List<CaptureFormat> formats =
             Arrays.asList(new CaptureFormat(1280, 720, 0, 30000), new CaptureFormat(960, 540, 0, 30000),
-                          new CaptureFormat(640, 480, 0, 30000), new CaptureFormat(480, 360, 0, 30000),
-                          new CaptureFormat(320, 240, 0, 30000), new CaptureFormat(256, 144, 0, 30000));
+                    new CaptureFormat(640, 480, 0, 30000), new CaptureFormat(480, 360, 0, 30000),
+                    new CaptureFormat(320, 240, 0, 30000), new CaptureFormat(256, 144, 0, 30000));
+    // Prioritize framerate below this threshold and resolution above the threshold.
+    private static final int FRAMERATE_THRESHOLD = 15;
     private TextView captureFormatText;
     private OnCallEvents callEvents;
-    private int width = 0;
-    private int height = 0;
-    private int framerate = 0;
-    private double targetBandwidth = 0;
+    private int width;
+    private int height;
+    private int framerate;
+    private double targetBandwidth;
+
+    public CaptureQualityController(
+            TextView captureFormatText, OnCallEvents callEvents) {
+        this.captureFormatText = captureFormatText;
+        this.callEvents = callEvents;
+    }
+
     private final Comparator<CaptureFormat> compareFormats = new Comparator<CaptureFormat>() {
         @Override
         public int compare(CaptureFormat first, CaptureFormat second) {
             int firstFps = calculateFramerate(targetBandwidth, first);
             int secondFps = calculateFramerate(targetBandwidth, second);
 
-            if (firstFps >= FRAMERATE_THRESHOLD && secondFps >= FRAMERATE_THRESHOLD
-                || firstFps == secondFps) {
+            if ((firstFps >= FRAMERATE_THRESHOLD && secondFps >= FRAMERATE_THRESHOLD)
+                    || firstFps == secondFps) {
                 // Compare resolution.
                 return first.width * first.height - second.width * second.height;
             } else {
@@ -56,19 +64,13 @@ public class CaptureQualityController implements SeekBar.OnSeekBarChangeListener
         }
     };
 
-    public CaptureQualityController(
-            TextView captureFormatText, OnCallEvents callEvents) {
-        this.captureFormatText = captureFormatText;
-        this.callEvents = callEvents;
-    }
-
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (progress == 0) {
             width = 0;
             height = 0;
             framerate = 0;
-            captureFormatText.setText("muted");
+            captureFormatText.setText(R.string.muted);
             return;
         }
 
@@ -93,11 +95,13 @@ public class CaptureQualityController implements SeekBar.OnSeekBarChangeListener
         height = bestFormat.height;
         framerate = calculateFramerate(targetBandwidth, bestFormat);
         captureFormatText.setText(
-                String.format(Locale.US, "%1$dx%2$d @ %3$d fps", width, height, framerate));
+                String.format(captureFormatText.getContext().getString(R.string.format_description), width,
+                        height, framerate));
     }
 
     @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {}
+    public void onStartTrackingTouch(SeekBar seekBar) {
+    }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
@@ -108,6 +112,6 @@ public class CaptureQualityController implements SeekBar.OnSeekBarChangeListener
     private int calculateFramerate(double bandwidth, CaptureFormat format) {
         return (int) Math.round(
                 Math.min(format.framerate.max, (int) Math.round(bandwidth / (format.width * format.height)))
-                / 1000.0);
+                        / 1000.0);
     }
 }

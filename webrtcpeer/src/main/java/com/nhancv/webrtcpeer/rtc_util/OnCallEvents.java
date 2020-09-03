@@ -5,7 +5,6 @@ import org.webrtc.RendererCommon;
 /**
  * Created by nhancao on 7/19/17.
  */
-
 public interface OnCallEvents {
     void onCallHangUp();
 
@@ -13,7 +12,7 @@ public interface OnCallEvents {
 
     void onVideoScalingSwitch(RendererCommon.ScalingType scalingType);
 
-    void onCaptureFormatChange(int width, int height, int framerate);
+    void onCaptureFormatChange(int width, int height, int frameRate);
 
     boolean onToggleMic();
 }

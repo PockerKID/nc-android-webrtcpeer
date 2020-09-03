@@ -6,7 +6,6 @@ import org.java_websocket.handshake.ServerHandshake;
 /**
  * Created by nhancao on 6/20/17.
  */
-
 public interface SocketCallBack {
 
     void onOpen(ServerHandshake serverHandshake);

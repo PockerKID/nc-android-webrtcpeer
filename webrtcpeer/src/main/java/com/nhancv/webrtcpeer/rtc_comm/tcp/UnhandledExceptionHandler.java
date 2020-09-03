@@ -13,13 +13,14 @@ package com.nhancv.webrtcpeer.rtc_comm.tcp;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.util.TypedValue;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
+import timber.log.Timber;
 
 /**
  * Singleton helper: install a default unhandled exception handler which shows
@@ -55,6 +56,7 @@ public class UnhandledExceptionHandler implements Thread.UncaughtExceptionHandle
         return writer.toString();
     }
 
+    @Override
     public void uncaughtException(Thread unusedThread, final Throwable e) {
         activity.runOnUiThread(new Runnable() {
             @Override
@@ -66,7 +68,7 @@ public class UnhandledExceptionHandler implements Thread.UncaughtExceptionHandle
                 errorView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 8);
                 ScrollView scrollingContainer = new ScrollView(activity);
                 scrollingContainer.addView(errorView);
-                Log.e(TAG, title + "\n\n" + msg);
+                Timber.tag(TAG).e(title + "\n\n" + msg);
                 DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -76,9 +78,9 @@ public class UnhandledExceptionHandler implements Thread.UncaughtExceptionHandle
                 };
                 AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                 builder.setTitle(title)
-                       .setView(scrollingContainer)
-                       .setPositiveButton("Exit", listener)
-                       .show();
+                        .setView(scrollingContainer)
+                        .setPositiveButton("Exit", listener)
+                        .show();
             }
         });
     }

@@ -4,12 +4,23 @@ package com.nhancv.webrtcpeer.rtc_comm.ws;
 /**
  * Created by nhancao on 6/19/17.
  */
-
 public enum SocketStatus {
 
+    /**
+     * onOpen
+     */
     ON_OPEN,
+    /**
+     * onMessage
+     */
     ON_MESSAGE,
+    /**
+     * onClose
+     */
     ON_CLOSE,
+    /**
+     * onError
+     */
     ON_ERROR;
 
     public String serverResponse;

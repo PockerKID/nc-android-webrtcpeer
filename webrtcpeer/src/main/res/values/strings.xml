@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="muted">Muted</string>
+    <string name="format_description">%1$dx%2$d @ %3$d fps</string>
+    <!--实时视频对讲-->
+    <string name="real_time_video_online_user_is_null">No Online User!</string>
+    <string name="real_time_video_request_online_user_failed">Request online users failed!</string>
+    <string name="real_time_video_get_url_failed">Get real-time video call url failed!</string>
+    <string name="real_time_video_send_request_failed">Send call failed!</string>
+    <string name="real_time_video_send_response_failed">Send call response failed!</string>
+    <string name="real_time_video_get_online_user_loading">Loading online users...</string>
+    <string name="real_time_video_request_get_url">Getting url...</string>
+    <string name="real_time_video_request_video">Calling...</string>
+    <string name="real_time_video_ready">Ready...</string>
+    <string name="real_time_video_other_side_close">The other party has hung up</string>
+    <string name="real_time_video_incorrect_address">Incorrect connect url!</string>
+    <string name="please_contract_administrator">Please contact the administrator.</string>
+    <string name="real_time_video_online_admin_user">Admin</string>
+    <string name="real_time_video_online_mobile_user">Mobile</string>
+
+    <string name="activity_loading_0">Loading.</string>
+    <string name="activity_loading_1">Loading..</string>
+    <string name="activity_loading_2">Loading...</string>
+
+    <string name="activity_received_real_time_video_request">Received a real-time video request,whether to accept?</string>
+    <string name="activity_real_time_video_now">Current user is in real-time video now</string>
+    <string name="msg_dialog_accept">Accept</string>
+    <string name="msg_dialog_refuse">Refuse</string>
+    <string name="activity_user_busy">%1$s is busy!</string>
+    <string name="activity_user_in_webrtc_call">%1$s is in webrtc call!</string>
+    <string name="activity_user_in_sip_call">%1$s is in sip call!</string>
+    <string name="activity_remote_control_type_not_support">Unsupported monitoring protocol!</string>
+    <string name="activity_user_no_answer">%1$s not answered.</string>
+    <string name="activity_user_device_low_power">%1$s\s device power is too low.</string>
+    <string name="activity_user_refused">%1$s rejected your request.</string>
+    <string name="activity_user_can_not_connect_to_server">%1$s\'s device can not connect to the server.</string>
+
+    <string name="try_again_later">Please try again later.</string>
+    <string name="net_connect_server_failed">Can not connect to the server!</string>
+
+    <string name="content_description_toggle_micro" translatable="false">Toggle micro</string>
+    <string name="content_description_toggle_speaker" translatable="false">Toggle speaker</string>
+    <string name="action_hangup">Hang Up</string>
+    <string name="msg_dialog_warning">Warning</string>
+    <string name="msg_box_cancel">Cancel</string>
+    <string name="msg_box_ok">OK</string>
+    <string name="msg_dialog_cancel">Cancel</string>
+    <string name="msg_dialog_confirm">Confirm</string>
+    <string name="msg_dialog_hint">Hint</string>
+    <string name="msg_dialog_set">Set</string>
+    <string name="msg_dialog_close">Close</string>
+    <string name="user_device_low_power">Your device power is too low!</string>
+    <string name="profile_id_str">ID</string>
+    <string name="profile_id_value">0000</string>
+    <string name="hide_progress_broadcast">hide_progress</string>
+    <string name="load_failed">Load failed!</string>
+    <string name="activity_real_time_video_title">Real-time Video</string>
+    <string name="broadcast_of_release_camera_for_remote_control">remote.control.request</string>
+    <string name="receiver_of_release_camera_for_remote_control">remote.control.response</string>
+    <string name="fragment_main_no_cache">Nothing</string>
+    <string name="broadcast_of_release_camera_for_system">com.oceanking.patrol.realtime.video.request</string>
+    <string name="broadcast_of_unknown_real_time_video_request">realtime.video.notification.unknown</string>
+    <string name="broadcast_of_unknown_remote_control_request">remote.control.notification.unknown</string>
+    <string name="broadcast_of_accept_real_time_video_request">realtime.video.notification.accept</string>
+    <string name="broadcast_of_refuse_real_time_video_request">realtime.video.notification.refuse</string>
+    <string name="receiver_of_release_camera_for_system">com.oceanking.patrol.realtime.video.response</string>
+    <string name="broadcast_of_release_camera_for_real_time_video">realtime.video.request</string>
+    <string name="receiver_of_release_camera_for_real_time_video">realtime.video.response</string>
+    <string name="broadcast_of_accept_remote_control_request">remote.control.notification.accept</string>
+    <string name="broadcast_of_refuse_remote_control_request">remote.control.notification.refuse</string>
+    <string name="default_notification_ticker">You have a new message</string>
+</resources>

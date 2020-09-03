@@ -37,5 +37,4 @@ public interface RTCClient {
      * Send removed ICE candidates to the other participant.
      */
     void sendLocalIceCandidateRemovals(final IceCandidate[] candidates);
-
 }

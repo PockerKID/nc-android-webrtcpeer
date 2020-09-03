@@ -9,7 +9,6 @@ import java.util.List;
 /**
  * Created by nhancao on 7/19/17.
  */
-
 public class SignalingParameters {
     public final List<PeerConnection.IceServer> iceServers;
     public final boolean initiator;

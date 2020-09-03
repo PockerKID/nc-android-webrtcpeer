@@ -5,7 +5,6 @@ import java.io.InputStream;
 /**
  * Created by nhancao on 6/19/17.
  */
-
 public interface SocketService {
 
     void connect(String host);

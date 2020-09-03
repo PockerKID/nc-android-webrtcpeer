@@ -10,7 +10,6 @@
 
 package com.nhancv.webrtcpeer.rtc_comm.tcp;
 
-import android.util.Log;
 
 import org.webrtc.ThreadUtils;
 
@@ -23,6 +22,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.ExecutorService;
+
+import timber.log.Timber;
 
 /**
  * Replacement for WebSocketChannelClient for direct communication between two IP addresses. Handles
@@ -45,8 +46,8 @@ public class TCPChannelClient {
      * that IP. If not, instead connects to the IP.
      *
      * @param eventListener Listener that will receive events from the client.
-     * @param ip IP address to listen on or connect to.
-     * @param port Port to listen on or connect to.
+     * @param ip            IP address to listen on or connect to.
+     * @param port          Port to listen on or connect to.
      */
     public TCPChannelClient(
             ExecutorService executor, TCPChannelEvents eventListener, String ip, int port) {
@@ -96,7 +97,7 @@ public class TCPChannelClient {
      * Helper method for firing onTCPError events. Calls onTCPError on the executor thread.
      */
     private void reportError(final String message) {
-        Log.e(TAG, "TCP Error: " + message);
+        Timber.tag(TAG).e("TCP Error: %s", message);
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -150,17 +151,17 @@ public class TCPChannelClient {
          */
         @Override
         public void run() {
-            Log.d(TAG, "Listening thread started...");
+            Timber.tag(TAG).d("Listening thread started...");
 
             // Receive connection to temporary variable first, so we don't block.
             Socket tempSocket = connect();
             BufferedReader in;
 
-            Log.d(TAG, "TCP connection established.");
+            Timber.tag(TAG).d("TCP connection established.");
 
             synchronized (rawSocketLock) {
                 if (rawSocket != null) {
-                    Log.e(TAG, "Socket already existed and will be replaced.");
+                    Timber.tag(TAG).e("Socket already existed and will be replaced.");
                 }
 
                 rawSocket = tempSocket;
@@ -179,11 +180,11 @@ public class TCPChannelClient {
                 }
             }
 
-            Log.v(TAG, "Execute onTCPConnected");
+            Timber.tag(TAG).v("Execute onTCPConnected");
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    Log.v(TAG, "Run onTCPConnected");
+                    Timber.tag(TAG).v("Run onTCPConnected");
                     eventListener.onTCPConnected(isServer());
                 }
             });
@@ -212,13 +213,13 @@ public class TCPChannelClient {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        Log.v(TAG, "Receive: " + message);
+                        Timber.tag(TAG).v("Receive: %s", message);
                         eventListener.onTCPMessage(message);
                     }
                 });
             }
 
-            Log.d(TAG, "Receiving thread exiting...");
+            Timber.tag(TAG).d("Receiving thread exiting...");
 
             // Close the rawSocket if it is still open.
             disconnect();
@@ -252,7 +253,7 @@ public class TCPChannelClient {
          * Sends a message on the socket. Should only be called on the executor thread.
          */
         public void send(String message) {
-            Log.v(TAG, "Send: " + message);
+            Timber.tag(TAG).v("Send: %s", message);
 
             synchronized (rawSocketLock) {
                 if (out == null) {
@@ -282,7 +283,7 @@ public class TCPChannelClient {
          */
         @Override
         public Socket connect() {
-            Log.d(TAG, "Listening on [" + address.getHostAddress() + "]:" + Integer.toString(port));
+            Timber.tag(TAG).d("Listening on [" + address.getHostAddress() + "]:" + Integer.toString(port));
 
             final ServerSocket tempSocket;
             try {
@@ -294,7 +295,7 @@ public class TCPChannelClient {
 
             synchronized (rawSocketLock) {
                 if (serverSocket != null) {
-                    Log.e(TAG, "Server rawSocket was already listening and new will be opened.");
+                    Timber.tag(TAG).e("Server rawSocket was already listening and new will be opened.");
                 }
 
                 serverSocket = tempSocket;
@@ -347,7 +348,7 @@ public class TCPChannelClient {
          */
         @Override
         public Socket connect() {
-            Log.d(TAG, "Connecting to [" + address.getHostAddress() + "]:" + Integer.toString(port));
+            Timber.tag(TAG).d("Connecting to [" + address.getHostAddress() + "]:" + Integer.toString(port));
 
             try {
                 return new Socket(address, port);

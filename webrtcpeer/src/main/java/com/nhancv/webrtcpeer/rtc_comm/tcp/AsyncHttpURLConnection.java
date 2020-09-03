@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 /**
@@ -49,6 +50,7 @@ public class AsyncHttpURLConnection {
 
     public void send() {
         Runnable runHttp = new Runnable() {
+            @Override
             public void run() {
                 sendHttpMessage();
             }
@@ -61,7 +63,7 @@ public class AsyncHttpURLConnection {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             byte[] postData = new byte[0];
             if (message != null) {
-                postData = message.getBytes("UTF-8");
+                postData = message.getBytes(StandardCharsets.UTF_8);
             }
             connection.setRequestMethod(method);
             connection.setUseCaches(false);
@@ -71,7 +73,7 @@ public class AsyncHttpURLConnection {
             // TODO(glaznev) - query request origin from pref_room_server_url_key preferences.
             connection.addRequestProperty("origin", HTTP_ORIGIN);
             boolean doOutput = false;
-            if (method.equals("POST")) {
+            if ("POST".equals(method)) {
                 doOutput = true;
                 connection.setDoOutput(true);
                 connection.setFixedLengthStreamingMode(postData.length);
@@ -93,7 +95,7 @@ public class AsyncHttpURLConnection {
             int responseCode = connection.getResponseCode();
             if (responseCode != 200) {
                 events.onHttpError("Non-200 response to " + method + " to URL: " + url + " : "
-                                   + connection.getHeaderField(null));
+                        + connection.getHeaderField(null));
                 connection.disconnect();
                 return;
             }

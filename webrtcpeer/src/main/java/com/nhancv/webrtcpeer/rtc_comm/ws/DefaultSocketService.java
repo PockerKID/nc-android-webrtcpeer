@@ -7,6 +7,7 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
@@ -15,9 +16,14 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
 /**
- * Created by nhancao on 6/19/17.
+ * DefaultSocketService
+ * <p>
+ * Date: 2020/9/2/0002 11:30
+ * Description:
+ *
+ * @author z
+ * @version 1.0.0
  */
-
 public class DefaultSocketService implements SocketService {
     private static final String TAG = DefaultSocketService.class.getSimpleName();
     private WebSocketClient client;
@@ -94,8 +100,10 @@ public class DefaultSocketService implements SocketService {
 
         try {
             String scheme = uri.getScheme();
-            if (certificateSSLFile == null) throw new Exception("Need to set certificateSSLFile first");
-            if (scheme.equals("https") || scheme.equals("wss")) {
+            if (certificateSSLFile == null) {
+                throw new Exception("Need to set certificateSSLFile first");
+            }
+            if ("https".equals(scheme) || "wss".equals(scheme)) {
                 setTrustedCertificate(certificateSSLFile);
                 // Create a TrustManager that trusts the CAs in our KeyStore
                 String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
@@ -146,7 +154,7 @@ public class DefaultSocketService implements SocketService {
         executor.execute(() -> {
             if (isConnected()) {
                 try {
-                    client.send(message.getBytes("UTF-8"));
+                    client.send(message.getBytes(StandardCharsets.UTF_8));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

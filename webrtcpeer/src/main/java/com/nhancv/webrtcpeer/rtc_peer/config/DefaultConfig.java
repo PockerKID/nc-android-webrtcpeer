@@ -1,12 +1,17 @@
 package com.nhancv.webrtcpeer.rtc_peer.config;
 
-import com.nhancv.webrtcpeer.rtc_peer.PeerConnectionParameters;
+import com.nhancv.webrtcpeer.rtc_peer.PeerConnectionClient;
 import com.nhancv.webrtcpeer.rtc_peer.StreamMode;
 
 /**
- * Created by nhancao on 7/19/17.
+ * DefaultConfig
+ * <p>
+ * Date: 2020/9/2/0002 11:35
+ * Description:
+ *
+ * @author z
+ * @version 1.0.0
  */
-
 public class DefaultConfig {
 
     // Video call enabled flag.
@@ -55,9 +60,9 @@ public class DefaultConfig {
     private boolean micEnabled;
 
     public DefaultConfig() {
-        this(true, false, false, true, "Default", 0, 0, 0, "VP8", "Default", 1700, "OPUS", "Default", 32, true, true,
-             false,
-             false, false, false, false, false, false, false, false, false, false, true);
+        this(true, false, false, true, "Default", 0, 0, 0, "VP8", "Default", 1200, "OPUS", "Default", 32, true, true,
+                false,
+                false, false, false, false, false, false, false, false, false, false, true);
     }
 
     public DefaultConfig(boolean videoCallEnabled, boolean loopback, boolean useScreencapture, boolean useCamera2,
@@ -98,20 +103,20 @@ public class DefaultConfig {
         this.micEnabled = micEnabled;
     }
 
-    public PeerConnectionParameters createPeerConnectionParams() {
-        return new PeerConnectionParameters(
+    public PeerConnectionClient.PeerConnectionParameters createPeerConnectionParams() {
+        return new PeerConnectionClient.PeerConnectionParameters(
                 videoCallEnabled, loopback, tracing, videoWidth, videoHeight, cameraFps, videoBitrateValue, videoCodec,
                 hwCodec, flexfecEnabled, audioBitrateValue, audioCodec,
                 noAudioProcessing, aecDump, useOpenSLES, disableBuiltInAEC, disableBuiltInAGC, disableBuiltInNS,
-                enableLevelControl, disableWebRtcAGCAndHPF, StreamMode.SENDRECV);
+                enableLevelControl, disableWebRtcAGCAndHPF, StreamMode.SENDRECV, null);
     }
 
-    public PeerConnectionParameters createPeerConnectionParams(StreamMode streamMode) {
-        return new PeerConnectionParameters(
+    public PeerConnectionClient.PeerConnectionParameters createPeerConnectionParams(StreamMode streamMode) {
+        return new PeerConnectionClient.PeerConnectionParameters(
                 videoCallEnabled, loopback, tracing, videoWidth, videoHeight, cameraFps, videoBitrateValue, videoCodec,
                 hwCodec, flexfecEnabled, audioBitrateValue, audioCodec,
                 noAudioProcessing, aecDump, useOpenSLES, disableBuiltInAEC, disableBuiltInAGC, disableBuiltInNS,
-                enableLevelControl, disableWebRtcAGCAndHPF, streamMode);
+                enableLevelControl, disableWebRtcAGCAndHPF, streamMode, null);
     }
 
     public boolean isVideoCallEnabled() {
